@@ -1,8 +1,15 @@
+# Use Ubuntu 20.04 as base image
 FROM ubuntu:20.04
 
-# ADD https://packages.ubuntu.com/dists/focal/main/binary-amd64/Packages .
+# Accept the username and password as build arguments
+ARG USERNAME
+ARG PASSWORD
 
+# Add the user (replace 'useradd' with the command you want to use to add a user)
+RUN useradd -m $USERNAME && echo "$USERNAME:$PASSWORD" | chpasswd
 
+# Add the user to the 'sudo' group
+RUN usermod -aG sudo $USERNAME
 # Change default shell to bash
 SHELL ["/bin/bash", "-c"]
 
@@ -34,6 +41,6 @@ RUN EULA=1 DISTRO=mecha-wayland MACHINE=mecha-mage-gen1 source edge-setup-releas
 # WORKDIR /yocto-build
 
 # Start building the image
-CMD bitbake mecha-image-core
+# CMD bitbake mecha-image-core
 
 # RUN bitbake mecha-image-core
