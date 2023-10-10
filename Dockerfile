@@ -7,10 +7,19 @@ RUN echo "Asia/Kolkata" > /etc/timezone && \
     apt update && \
     apt install -y tzdata && \
     dpkg-reconfigure --frontend noninteractive tzdata
+# Install Python 3
+RUN apt update && apt install -y python3
 
-# Update and install dependencies
-RUN apt-get update && apt-get install -y \
-    gawk wget git  diffstat unzip texinfo gcc build-essential chrpath socat cpio python3 python3-pip python3-pexpect xz-utils debianutils iputils-ping python3-git python3-jinja2 libegl1-mesa libsdl1.2-dev python3-subunit mesa-common-dev zstd liblz4-tool file locales
+# Install required dependencies
+RUN apt install -y \
+    gawk wget git repo diffstat unzip texinfo gcc build-essential \
+    chrpath socat cpio python3-pip python3-pexpect xz-utils \
+    debianutils iputils-ping python3-git python3-jinja2 libegl1-mesa \
+    libsdl1.2-dev python3-subunit mesa-common-dev zstd liblz4-tool file locales
+
+# # Update and install dependencies
+# RUN apt-get update && apt-get install -y \
+#     gawk wget git  diffstat unzip texinfo gcc build-essential chrpath socat cpio python3 python3-pip python3-pexpect xz-utils debianutils iputils-ping python3-git python3-jinja2 libegl1-mesa libsdl1.2-dev python3-subunit mesa-common-dev zstd liblz4-tool file locales
 
 # add repo tool
 # Download and install the 'repo' tool
