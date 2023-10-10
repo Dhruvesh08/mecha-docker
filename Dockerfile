@@ -20,7 +20,8 @@ RUN apt-get update && apt-get install -y \
 
 # add repo tool
 # Download and install the 'repo' tool
-RUN curl https://storage.googleapis.com/git-repo-downloads/repo > ~/.bin/repo && chmod a+rx ~/.bin/repo && export PATH="$HOME/.bin:$PATH"
+RUN  curl https://storage.googleapis.com/git-repo-downloads/repo > /usr/bin/repo && \
+    chmod a+x /usr/bin/repo
 
 RUN git clone https://github.com/mecha-org/mecha-manifests.git && cd mecha-manifests && git checkout kirkstone && repo sync
 
