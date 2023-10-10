@@ -11,8 +11,8 @@ RUN echo "Asia/Kolkata" > /etc/timezone && \
 # Install Python 3
 RUN apt update && apt install -y python
 
-# Create a symbolic link from python to python3
-RUN ln -s /usr/bin/python3 /usr/bin/python
+# Check if the symbolic link 'python' already exists, and use it if it does
+RUN if [ ! -e /usr/bin/python ]; then ln -s /usr/bin/python3 /usr/bin/python; fi
 
 # Update and install dependencies
 RUN apt-get update && apt-get install -y \
