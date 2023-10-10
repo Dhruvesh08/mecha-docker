@@ -33,4 +33,6 @@ RUN EULA=1 DISTRO=mecha-wayland MACHINE=mecha-mage-gen1 source edge-setup-releas
 
 # WORKDIR /yocto-build
 
-CMD ["bitbake", "mecha-image-core"]
+# CMD ["bitbake", "mecha-image-core"]
+
+RUN bitbake mecha-image-core
