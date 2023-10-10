@@ -8,4 +8,4 @@ RUN mkdir -p yocto-build && cd yocto-build && source edge-setup-release.sh -b bu
 
 WORKDIR /yocto-build
 
-CMD ["bitbake"]
+CMD ["bitbake", "mecha-image-core"]
