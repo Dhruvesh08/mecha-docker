@@ -2,6 +2,10 @@ FROM ubuntu:20.04
 
 # ADD https://packages.ubuntu.com/dists/focal/main/binary-amd64/Packages .
 
+
+# Change default shell to bash
+SHELL ["/bin/bash", "-c"]
+
 # Preconfigure the time zone selection (replace "America/New_York" with your desired time zone)
 RUN echo "Asia/Kolkata" > /etc/timezone && \
     apt update && \
@@ -25,7 +29,7 @@ RUN wget https://storage.googleapis.com/git-repo-downloads/repo -O /usr/bin/repo
 RUN repo init -u https://github.com/mecha-org/mecha-manifests.git -b kirkstone -m mecha-comet-m-image-core-5.15.xml && repo sync
 
 # Setup the bitbake local.conf
-RUN DISTRO=mecha-wayland MACHINE=mecha-mage-gen1 . edge-setup-release.sh -b build
+RUN DISTRO=mecha-wayland MACHINE=mecha-mage-gen1 source edge-setup-release.sh -b build
 
 # WORKDIR /yocto-build
 
