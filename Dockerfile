@@ -22,7 +22,7 @@ RUN apt-get update && apt-get install -y \
 RUN wget https://storage.googleapis.com/git-repo-downloads/repo -O /usr/bin/repo && \
     chmod a+x /usr/bin/repo
 
-RUN git clone https://github.com/mecha-org/mecha-manifests.git && cd mecha-manifests && git checkout kirkstone && repo sync
+RUN repo init -u https://github.com/mecha-org/mecha-manifests.git -b kirkstone -m mecha-comet-m-image-core-5.15.xml && repo sync
 
 RUN mkdir -p yocto-build && cd yocto-build && source edge-setup-release.sh -b build
 
