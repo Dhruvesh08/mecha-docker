@@ -9,7 +9,10 @@ RUN echo "Asia/Kolkata" > /etc/timezone && \
     dpkg-reconfigure --frontend noninteractive tzdata
 
 # Install Python 3
-RUN apt update && apt install -y python3
+RUN apt update && apt install -y python
+
+# Create a symbolic link from python to python3
+RUN ln -s /usr/bin/python3 /usr/bin/python
 
 # Update and install dependencies
 RUN apt-get update && apt-get install -y \
