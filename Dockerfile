@@ -34,4 +34,5 @@ RUN repo init -u https://github.com/mecha-org/mecha-manifests.git -b kirkstone -
 # Script to automate env setup
 COPY startup-mecha.sh /usr/bin/
 
-USER usersetup
+# USER usersetup
+CMD ["/bin/bash"]
