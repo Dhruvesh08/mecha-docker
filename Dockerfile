@@ -12,11 +12,14 @@ RUN echo "Asia/Kolkata" > /etc/timezone && \
     apt install -y tzdata && \
     dpkg-reconfigure --frontend noninteractive tzdata
 
+
+
 # Install Python 3
 RUN apt update && apt install -y python
 
 # Check if the symbolic link 'python' already exists, and use it if it does
 RUN if [ ! -e /usr/bin/python ]; then ln -s /usr/bin/python3 /usr/bin/python; fi
+
 
 # Update and install dependencies
 RUN apt-get update && apt-get install -y \
@@ -26,19 +29,17 @@ RUN apt-get update && apt-get install -y \
 RUN wget https://storage.googleapis.com/git-repo-downloads/repo -O /usr/bin/repo && \
     chmod a+x /usr/bin/repo
 
+RUN useradd -U -m yoctouser && \
+    echo "yoctouser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+USER yoctouser
+WORKDIR /home/yoctouser
+
 RUN repo init -u https://github.com/mecha-org/mecha-manifests.git -b kirkstone -m mecha-comet-m-image-core-5.15.xml && repo sync
 
 # Setup the bitbake local.conf
 RUN EULA=1 DISTRO=mecha-wayland MACHINE=mecha-mage-gen1 source edge-setup-release.sh -b build
 
-
-RUN useradd -U -m yoctouser && \
-    echo "yoctouser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-# Setup the bitbake local.conf
-# RUN EULA=1 DISTRO=mecha-wayland MACHINE=mecha-mage-gen1 source edge-setup-release.sh -b build
-
-USER yoctouser
-WORKDIR /home/yoctouser
 
 # USER usersetup
 CMD ["/bin/bash"]
