@@ -29,11 +29,11 @@ RUN apt-get update && apt-get install -y \
 RUN wget https://storage.googleapis.com/git-repo-downloads/repo -O /usr/bin/repo && \
     chmod a+x /usr/bin/repo
 
-RUN useradd -U -m yoctouser && \
-    echo "yoctouser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+RUN useradd -U -m mechauser && \
+    echo "mechauser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-USER yoctouser
-WORKDIR /home/yoctouser
+USER mechauser
+WORKDIR /home/mechauser
 
 RUN repo init -u https://github.com/mecha-org/mecha-manifests.git -b kirkstone -m mecha-comet-m-image-core-5.15.xml && repo sync
 
