@@ -29,11 +29,9 @@ RUN wget https://storage.googleapis.com/git-repo-downloads/repo -O /usr/bin/repo
 RUN repo init -u https://github.com/mecha-org/mecha-manifests.git -b kirkstone -m mecha-comet-m-image-core-5.15.xml && repo sync
 
 # Setup the bitbake local.conf
-RUN EULA=1 DISTRO=mecha-wayland MACHINE=mecha-mage-gen1 source edge-setup-release.sh -b build
+# RUN EULA=1 DISTRO=mecha-wayland MACHINE=mecha-mage-gen1 source edge-setup-release.sh -b build
 
-# WORKDIR /yocto-build
+# Script to automate env setup
+COPY startup-mecha.sh /usr/bin/
 
-# Start building the image
-CMD bitbake mecha-image-core
-
-# RUN bitbake mecha-image-core
+USER usersetup
