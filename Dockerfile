@@ -28,11 +28,13 @@ RUN wget https://storage.googleapis.com/git-repo-downloads/repo -O /usr/bin/repo
 
 RUN repo init -u https://github.com/mecha-org/mecha-manifests.git -b kirkstone -m mecha-comet-m-image-core-5.15.xml && repo sync
 
+RUN useradd -U -m yoctouser && \
+    echo "yoctouser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 # Setup the bitbake local.conf
 # RUN EULA=1 DISTRO=mecha-wayland MACHINE=mecha-mage-gen1 source edge-setup-release.sh -b build
 
-# Script to automate env setup
-COPY startup-mecha.sh /usr/bin/
+USER yoctouser
+WORKDIR /home/yoctouser
 
 # USER usersetup
 CMD ["/bin/bash"]
