@@ -30,6 +30,7 @@ RUN wget https://storage.googleapis.com/git-repo-downloads/repo -O /usr/bin/repo
     chmod a+x /usr/bin/repo
 
 RUN useradd -U -m mechauser && \
+    /usr/sbin/locale-gen en_US.UTF-8 && \
     echo "mechauser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 USER mechauser
