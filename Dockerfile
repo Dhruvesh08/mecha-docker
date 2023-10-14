@@ -1,46 +1,91 @@
-# Use Ubuntu 20.04 as base image
+# Base Image
 FROM ubuntu:20.04
 
-# Accept the username and password as build arguments
-ARG USERNAME
-ARG PASSWORD
+# Set the DEBIAN_FRONTEND environment variable to noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
-# Add the user (replace 'useradd' with the command you want to use to add a user)
-RUN useradd -m $USERNAME && echo "$USERNAME:$PASSWORD" | chpasswd
+# ADD https://packages.ubuntu.com/dists/focal/main/binary-amd64/Packages .
+RUN apt-get update && apt-get install -y \
+    gawk \
+    wget \
+    git \
+    diffstat \
+    unzip \
+    texinfo \
+    gcc \
+    build-essential \
+    chrpath \
+    socat \
+    cpio \
+    python3 \
+    python3-pip \
+    python3-pexpect \
+    xz-utils \
+    debianutils \
+    iputils-ping \
+    python3-git \
+    python3-jinja2 \
+    libegl1-mesa \
+    libsdl1.2-dev \
+    python3-subunit \
+    mesa-common-dev \
+    zstd \
+    liblz4-tool \
+    file \
+    nano \
+    vim \
+    locales \
+    && rm -rf /var/lib/apt/lists/*
 
-# Add the user to the 'sudo' group
-RUN usermod -aG sudo $USERNAME
-# Change default shell to bash
+# Set default shell to BASH for source
+RUN rm /bin/sh && ln -s bash /bin/sh
+
+# Set Default shell to BASH
 SHELL ["/bin/bash", "-c"]
 
-# Preconfigure the time zone selection (replace "America/New_York" with your desired time zone)
-RUN echo "Asia/Kolkata" > /etc/timezone && \
-    apt update && \
-    apt install -y tzdata && \
-    dpkg-reconfigure --frontend noninteractive tzdata
-
-# Install Python 3
-RUN apt update && apt install -y python
+# Set locale - required for bitbake
+RUN locale-gen en_US.UTF-8 && update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LC_ALL en_US.UTF-8
 
 # Check if the symbolic link 'python' already exists, and use it if it does
 RUN if [ ! -e /usr/bin/python ]; then ln -s /usr/bin/python3 /usr/bin/python; fi
 
-# Update and install dependencies
-RUN apt-get update && apt-get install -y \
-    gawk wget git  diffstat unzip texinfo gcc build-essential chrpath socat cpio python3 python3-pip python3-pexpect xz-utils debianutils iputils-ping python3-git python3-jinja2 libegl1-mesa libsdl1.2-dev python3-subunit mesa-common-dev zstd liblz4-tool file locales
-
 # Download and install the 'repo' tool using 'wget'
-RUN wget https://storage.googleapis.com/git-repo-downloads/repo -O /usr/bin/repo && \
-    chmod a+x /usr/bin/repo
+RUN wget https://storage.googleapis.com/git-repo-downloads/repo -O /usr/bin/repo && chmod a+x /usr/bin/repo
+
+# Create user and change context
+RUN useradd -U -m mecha && /usr/sbin/locale-gen en_US.UTF-8 && echo "mecha ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+# change user to mecha, own the home directory
+USER mecha
+
+WORKDIR /home/mecha
 
 RUN repo init -u https://github.com/mecha-org/mecha-manifests.git -b kirkstone -m mecha-comet-m-image-core-5.15.xml && repo sync
 
+ARG MACHINE=mecha-comet-m-gen1
+ARG DISTRO=mecha-linux
+ARG EULA=1
+
+# Set environment images
+RUN echo "#!/bin/sh" >> ./build-env.sh
+RUN echo "export EULA=${EULA}" >> ./build-env.sh
+RUN echo "export DISTRO=${DISTRO}" >> ./build-env.sh
+RUN echo "export MACHINE=${MACHINE}" >> ./build-env.sh
+RUN chmod u+x ./build-env.sh
+
+RUN printenv
+
 # Setup the bitbake local.conf
-RUN EULA=1 DISTRO=mecha-wayland MACHINE=mecha-mage-gen1 source edge-setup-release.sh -b build
+# RUN chmod u+x ./edge-setup-release.sh
+# RUN EULA=${EULA} DISTRO=${DISTRO} MACHINE=${MACHINE} ./edge-setup-release.sh -b build
 
-# WORKDIR /yocto-build
+# Copy the script into the image
+COPY --chown=mecha:mecha scripts/build-image.sh ./build-image.sh
+COPY --chown=mecha:mecha scripts/build-setup.sh ./build-setup.sh
 
-# Start building the image
-# CMD bitbake mecha-image-core
+# Make the script executable
+RUN chmod u+x ./build-image.sh
+RUN chmod u+x ./build-setup.sh
 
-# RUN bitbake mecha-image-core
+CMD ["./build-image.sh"]
